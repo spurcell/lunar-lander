@@ -1,0 +1,9 @@
+/**
+ * mass determines gravity
+ * friction determines drag
+ */
+
+create is <-> (mass, atmosphere) {
+
+};
+

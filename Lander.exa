@@ -1,0 +1,74 @@
+/**
+ * Models a lunar lander.
+ */
+
+Trig is    <Math/Trig>;
+
+// engine characteristics
+
+NOZZLE_VEL  is 500;
+MAX_FLOW    is 10;
+
+/**
+ * Creates a lander that ignores angular momentum, gravity, and drag.
+ *
+ * pos          position vector
+ * vel          velocity vector
+ * attitude     angle above horizontal, in radians
+ * mass         mass of vehicle with zero fuel
+ * fuel         mass of fuel
+ */
+
+create: <-> (pos, vel, attitude, mass, fuel, clockStep) {
+
+    throttle = 0;
+
+    posUpdated is -< (pos);
+
+    // private methods
+
+    on clockStep -> {
+
+        // update position
+
+        pos.x += vel.x;
+        pos.y += vel.y;
+
+        posUpdated.emit(pos);
+
+        // update velocity
+
+        flow = throttle * MAX_FLOW;
+
+        ejectedMass = fuel >= flow ? flow : fuel;
+
+        fuel -= ejectedMass;
+
+        // conservation of momentum, baby, yeah!
+        deltaV += (ejectedMass * NOZZLE_VEL) / (mass + fuel);
+
+        vel.x = Trig.cos(attitude) * deltaV;
+        vey.y = Trig.sin(attitude) * deltaV;
+    };
+
+
+    // public methods and events
+    // note these are all sinks, not services
+
+    reply [
+
+        addFuel: -> (amount) {
+            fuel += amount;
+        },
+
+        setThrottle: -> throttle,
+
+        rotate: -> (degrees) {
+
+            // 360 degrees per 2pi radians
+            attitude += degrees / (2 * Trig.PI);
+        },
+
+        posUpdated: posUpdated.listen
+    ];
+};

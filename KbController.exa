@@ -1,0 +1,33 @@
+// connects the keyboard to the lander model
+
+create is -> (lander, keyboard) {
+
+    throttle = 0;
+
+    // listen for engine keys
+
+    @keyboard.onKey('w', function(evt) {
+
+        throttle += 5;
+        lander.setThrottle(throttle);
+    });
+
+    @keyboard.onKey('s', function(evt) {
+
+        throttle -= 5;
+        lander.setThrottle(throttle);
+    });
+
+
+    // listen for rotation keys
+
+    @keyboard.onKey('d') >> {
+
+        lander.rotate(5);
+    };
+
+    @keyboard.onKey('a') >> {
+
+        lander.rotate(-5);
+    };
+};

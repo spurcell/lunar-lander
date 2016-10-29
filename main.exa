@@ -1,0 +1,45 @@
+/**
+ * A lunar lander game.
+ */
+
+Moon            is  <Moon>;
+Lander          is  <Lander>;
+ConsoleView     is  <ConsoleView>;
+KbController    is  <KbController>;
+
+UPDATE_INTERVAL is 1000;    // in ms
+
+main is <-> (args, env) {
+
+    moon    is Moon.create();
+
+    // the view is event driven; the models are clock-driven
+
+    timeStep is -<;
+
+    // for a different arch, we could invert both of these and give the *model* a controller and have it subscribe to messages,
+    // or give it the model a view and have it send it messages!
+
+    lander      is Lander.create([0,0], [0,0], 0, 1000, 100, timeStep.listen);
+    view        is ConsoleView.create(lander.posUpdated, env.out);
+    controller  is KbController.create(lander, system.keyboard);   // only needs authority to access keyboard
+
+    // subscribe to clock events of the given interval
+    // this expr: env.clock.interval(UPDATE_INTERVAL) evaluates to a channel output (source)!
+    // could actually swap that expr in for timeStep.out above
+    // we should build tests around all these options to prove they behave the same
+    // should channel be in/out or source/sink?
+
+    on env.clock.interval(UPDATE_INTERVAL) timeStep.emit;
+};
+
+// binary
+// success/failure, local/remote, authority/expertise, constant/variable (mutable/immutable), request/response, computation/communication
+// most programs are not things to "run", they're things to "build"
+// software is physical! - it has extent, it can be measured, it uses energy
+// do we want a header/body split instead? constants vs. services?
+// bodies are modules, headers are references?
+// C has a very clear model: it's the machine, directly - you understand the machine, you already mostly understand C
+// higher-level languages fall apart, acting more like libraries
+// exa starts with a different kind of machine
+// natural limitations of encapsulation: authority, complexity (performance/resource cost)

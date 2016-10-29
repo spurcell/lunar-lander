@@ -1,0 +1,11 @@
+/**
+ * A view of the system via the terminal.
+ */
+
+create is <-> (posUpdated, out) {
+
+    // subscribe to position update events
+    on posUpdated -> (pos) {
+        out.write("`pos`");
+    }
+};
